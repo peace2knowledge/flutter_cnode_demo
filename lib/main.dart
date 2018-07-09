@@ -62,8 +62,15 @@ class _MyHomePageState extends State<MyHomePage> {
     await http.get('https://cnodejs.org/api/v1/topics?page=1');
     if (response.statusCode == 200) {
       // If server returns an OK response, parse the JSON
-      print(json.decode(response.body));
-      return json.decode(response.body)["data"];
+      List<dynamic> cc = json.decode(response.body)["data"];
+
+      for( final kk in cc) {
+        Map o = kk as Map;
+        print(o);
+      }
+
+      return cc;
+
     } else {
       // If that response was not OK, throw an error.
       throw Exception('Failed to load post');
@@ -152,18 +159,6 @@ class ListItem extends StatelessWidget {
 }
 
 class Tag extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Container(
-      decoration: BoxDecoration(
-          color: Colors.green,
-          borderRadius: BorderRadius.all(Radius.circular(5.0))),
-      child: Text("置顶", style: TextStyle(color: Colors.white)),
-    );
-  }
-}
-
-class CImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Container(
