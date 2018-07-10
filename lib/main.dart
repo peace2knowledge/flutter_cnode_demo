@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ? new Center(
               child: new ListView.builder(
                 padding: new EdgeInsets.all(15.0),
-                itemExtent: 320.0,
+                itemExtent: 130.0,
                 itemBuilder: (BuildContext context, int index) {
                   return ListItem(topics[index]);
                 },
@@ -104,10 +104,19 @@ class ListItem extends StatelessWidget {
         child: Column(
           children: <Widget>[
             FirstLine,
-            Padding(padding: EdgeInsets.only(left: 0.0),child: Text(itmeInfo["title"],style: TextStyle(fontSize: 15.0),),),
+            Padding(
+              padding: EdgeInsets.only(left: 0.0),
+              child: Text(
+                itmeInfo["title"],
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: TextStyle(fontSize: 15.0,fontWeight: FontWeight.bold),
+              ),
+            ),
 //            HtmlTextView(
 //                data:),
-            new HtmlTextView(data: itmeInfo["content"]),
+            // new HtmlTextView(data: itmeInfo["content"].subString(100)),
             Divider(
               color: Colors.grey,
             ),
@@ -119,8 +128,10 @@ class ListItem extends StatelessWidget {
   }
 
   Row get ThirdLine {
+    TextStyle bottomStyle = TextStyle(fontSize: 12.0);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -129,19 +140,23 @@ class ListItem extends StatelessWidget {
               width: 25.0,
               height: 25.0,
               child: new CircleAvatar(
-                backgroundImage: new NetworkImage(itmeInfo["author"]["avatar_url"]),
+                backgroundImage:
+                    new NetworkImage(itmeInfo["author"]["avatar_url"]),
               ),
             ),
-            Text(itmeInfo["author"]["loginname"]),
+            Text(itmeInfo["author"]["loginname"], style: bottomStyle),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(right: 5.0), child: Text("创建于:")),
+            Padding(
+                padding: EdgeInsets.only(right: 5.0),
+                child: Text("创建于:", style: bottomStyle)),
             Padding(
               padding: EdgeInsets.only(right: 5.0),
-              child: Text("2018-06-04 16:02:07"),
+              child: Text("2018-06-04 16:02:07", style: bottomStyle),
             )
           ],
         )
@@ -150,6 +165,7 @@ class ListItem extends StatelessWidget {
   }
 
   Row get FirstLine {
+    TextStyle bottomStyle = TextStyle(fontSize: 12.0);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -157,18 +173,20 @@ class ListItem extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(right: 5.0), child: Text("77")),
+            Padding(
+                padding: EdgeInsets.only(right: 5.0),
+                child: Text(itmeInfo["reply_count"].toString(), style: bottomStyle)),
             Padding(
               padding: EdgeInsets.only(right: 5.0),
-              child: Text("/"),
+              child: Text("/", style: bottomStyle),
             ),
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Text("12778"),
+              child: Text(itmeInfo["visit_count"].toString(), style: bottomStyle),
             ),
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Text("16小时之前"),
+              child: Text("16小时之前", style: bottomStyle),
             )
           ],
         )
@@ -184,7 +202,7 @@ class Tag extends StatelessWidget {
       decoration: BoxDecoration(
           color: Colors.green,
           borderRadius: BorderRadius.all(Radius.circular(5.0))),
-      child: Text("置顶", style: TextStyle(color: Colors.white)),
+      child: Text("置顶", style: TextStyle(fontSize: 14.0, color: Colors.white)),
     );
   }
 }
