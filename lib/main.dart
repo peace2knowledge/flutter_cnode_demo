@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_html_textview/flutter_html_textview.dart';
+import 'package:flutter_html_view/flutter_html_view.dart';
 
 void main() => runApp(new MyApp());
 
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: new MyHomePage(title: 'CNode 社区'),
+      home: MyHomePage(title: "CNode 社区"),
     );
   }
 }
@@ -29,12 +31,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  List<dynamic> topics;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    fetchTopics();
   }
 
   @override
@@ -43,9 +45,19 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: new Text(widget.title),
       ),
-      body: new Center(
-        child: ListItem(),
-      ),
+      body: topics != null
+          ? new Center(
+              child: new ListView.builder(
+                padding: new EdgeInsets.all(15.0),
+                itemExtent: 320.0,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListItem(topics[index]);
+                },
+              ),
+            )
+          : new Center(
+              child: Text("加载中"),
+            ),
       floatingActionButton: new FloatingActionButton(
         foregroundColor: Colors.white,
         backgroundColor: Colors.green,
@@ -56,45 +68,52 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
- // https://cnodejs.org/api
-  Future<List<dynamic>> fetchTopics () async {
-    final response =
-    await http.get('https://cnodejs.org/api/v1/topics?page=1');
+  // https://cnodejs.org/api
+  Future<List<dynamic>> fetchTopics() async {
+    final response = await http.get('https://cnodejs.org/api/v1/topics?page=1');
     if (response.statusCode == 200) {
       // If server returns an OK response, parse the JSON
       List<dynamic> cc = json.decode(response.body)["data"];
 
-      for( final kk in cc) {
-        Map o = kk as Map;
-        print(o);
-      }
+      setState(() {
+        topics = cc;
+      });
+//      for (final kk in cc) {
+//        Map o = kk as Map;
+//        print(o);
+//      }
 
       return cc;
-
     } else {
       // If that response was not OK, throw an error.
       throw Exception('Failed to load post');
     }
   }
-
-
 }
 
 class ListItem extends StatelessWidget {
+  final Map itmeInfo;
+
+  ListItem(this.itmeInfo);
+
   @override
   Widget build(BuildContext context) {
-    return new Padding(
-      padding: EdgeInsets.all(15.0),
-      child: Column(
-        children: <Widget>[
-          FirstLine,
-          Text(
-              "最近我的好友在写项目的时候经常会抱怨数据的来源，的确对于一个前端来说，数据接口数据资源永远是Mock。网上看很多大神python，node玩的飞起。但自我感觉，并没有一套好的流程方案可以走进我们开发的流程中。为了帮助我的好友并且需要数据的你来说，可以仔细的看看整套流程。因为我也是个前端，所以知道大家需要的是什么以及处理的方案。那么就跟着我一起学习下吧！"),
-          Divider(
-            color: Colors.grey,
-          ),
-          ThirdLine
-        ],
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(15.0),
+        child: Column(
+          children: <Widget>[
+            FirstLine,
+            Padding(padding: EdgeInsets.only(left: 0.0),child: Text(itmeInfo["title"],style: TextStyle(fontSize: 15.0),),),
+//            HtmlTextView(
+//                data:),
+            new HtmlTextView(data: itmeInfo["content"]),
+            Divider(
+              color: Colors.grey,
+            ),
+            ThirdLine
+          ],
+        ),
       ),
     );
   }
@@ -108,12 +127,12 @@ class ListItem extends StatelessWidget {
           children: <Widget>[
             SizedBox(
               width: 25.0,
-                height: 25.0,
-                child: new CircleAvatar(
-              backgroundImage: new NetworkImage(
-                  "https://user-gold-cdn.xitu.io/2018/6/24/16430b934f036086?imageView2/1/w/90/h/90/q/85/format/webp/interlace/1"),
-            ),),
-            Text("ddddd"),
+              height: 25.0,
+              child: new CircleAvatar(
+                backgroundImage: new NetworkImage(itmeInfo["author"]["avatar_url"]),
+              ),
+            ),
+            Text(itmeInfo["author"]["loginname"]),
           ],
         ),
         Row(
@@ -167,5 +186,23 @@ class Tag extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(5.0))),
       child: Text("置顶", style: TextStyle(color: Colors.white)),
     );
+  }
+}
+
+class ListViewHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+        appBar: AppBar(
+          title: Text("ListView Demo"),
+        ),
+        body: new ListView.builder(
+          padding: new EdgeInsets.all(15.0),
+          itemExtent: 30.0,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+                leading: const Icon(Icons.person), title: Text("这是第$index"));
+          },
+        ));
   }
 }
